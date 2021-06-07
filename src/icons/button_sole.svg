@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        fill-opacity: 0.6;
+        opacity: 0.8;
+      }
+    </style>
+  </defs>
+  <g id="button_sole">
+    <g id="그룹_3" data-name="그룹 3">
+      <circle id="타원_2" data-name="타원 2" class="cls-1" cx="40" cy="40" r="40"/>
+      <image id="벡터_고급_개체" data-name="벡터 고급 개체" x="18" y="22" width="44" height="35" xlink:href="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAjCAYAAADv0ujUAAAD3UlEQVRYhbWYX4hVVRTGf3fNH8kCIynyqcx8aJ5qKsEwiHYoNNVGMbIamYcYsAiiMuZBQt8a6B+G1EOEBMkQEbJzUIh2ZFaIo/kiBUZhDxESRkaDo2N7ejjrOpfrOWevO3P74MA++35rfd8599691t4NOkCKoQE8ATwHrAH6gJ+BCeAtcf58Rdwy4CXgSWAVMAscA94FPhbn56weGh2Y7QE+BJ6uoPwErBfnz7TF3Qp8DqyuiNsHjIjz/1p8iIWk2EG1WdTQfn0w4MpD7qfaLJpzh9WEyXCK4TpgzEC9E9jUcr9J53IYU40srG94HbDUyF1fMa7DUtXIwmr4JiMP4MaKcVc0rIZ/60D494pxVzSshr8DSpesEhyoGNfhvGpkYTIszl8AdhqoR4BDLfeHdC6HnaqRRW9zkGIQ4GHgIeAGiq/zgDj/jVLeAW4BXqzIdQLY3FoExPm5FMNm4CBwd0Xc25q76WMd8CiwAvgT+AI4KM4n0MKhi/snwD0lCSeB4WYVSzE8yHylW0JRMCaA98X5S2WOUgz9wChFpVsNXEQrnTj/pXKWAR8Bj5SkOA48Ls6faSjxe+C2ijcAxdf6QPMpc0gx9AKI85eNfAG+Au6vof0CDApFQagziyYaNggPpBgmgRlgJsUwmWIYMHgezphFPY4JsMWQkDpeiqEvxbALOAkMAT16DQEnUwy7Ugx9C8ndzhNgpZF8e4XZO4CjFKtIfwmlXz87qlxz7hKsFGDaSP67fSLFsAWYAgYN8YPAlMZkc1dgWrCtkwBfNwcphkaKYZxidbjWGI9yJ1IM49pbX5U7gyMCjBuIF4DdarYH2Iute6vCGLC3pRXdrRo5jIs4fxjYXkO6BGwV53/V+z3AyIKtzmNEc6G5t6pWFbaL84dFA94ENgDfAs1KNUtRNNaK858CpBheBrZ1wWwT2zQnqrFWNWf18zn1tEE9Xr1FSjFcAywH/hDnL7bM30vRoPS2xywSl4H7xPmpFq0lFK3pufYew7Sn0z/IMcpLdzdwHFhj2Yxa28uN/H9m0dwbLUSr4ecX7sUMk0b2J5FiuB44R2c77IUgAcvF+b/qSBYTdxl5i4WoVpaUw6rFezEjq2UxbDov6BKyWhbD/3TBiBVZLYvhU10wYkVWy2L4BHC2Q+GkVyc4q1q1yBoW52fRJqUDvKZXJ9ijWrWw9gVvAE8BVTuGVnwAvKrjm4FnDDE/qkYW1oOUGYr92eka2jTwAjAqzs9pXzCqc3W7mtPAkGpkYT7QhivHrq9QnOk2T9J/AD4D3hPnS8/SUgwrgGeBx4AB5k/u9wGvi/Pmleg/IRoxXSAHvT8AAAAASUVORK5CYII="/>
+    </g>
+  </g>
+</svg>

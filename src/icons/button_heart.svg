@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        fill-opacity: 0.6;
+        opacity: 0.8;
+      }
+    </style>
+  </defs>
+  <g id="button_heart">
+    <g id="그룹_2" data-name="그룹 2">
+      <circle id="타원_1" data-name="타원 1" class="cls-1" cx="40" cy="40" r="40"/>
+      <image id="벡터_고급_개체" data-name="벡터 고급 개체" x="20" y="23" width="40" height="34" xlink:href="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAiCAYAAAAtZZsLAAACh0lEQVRYhc3YMYgUVxjA8d8+jWhlm0rsRFCjkGtEGwdBVHgepAohFiKYRkgKbRQDuULFwkJQLlgoYnFckSmUQJikUESxUE8lWAgiCBZaiAiScGOKeevd7a67jru58d/s7Mx73/dnZnjzvq+lB2WRr8IB7MJafIFXeIQ/cTlk8X6vuR+iLPL1+BbbsAYr8S/+xhWcC1l82jmv1RGkhUP4GcsH5PwDh0MW7wwQ24QT2D4g3tuU92TI4rsuwbLIAy7guwGB5jOLCfwSsjjbIbYER3EES2rEvIS9IYslhHkXJmrKSYmPYaos8hXz5FZgKl2rIyc5TLT/tFLAzbiu45HX5Dd8k46nsWeIWO+wJWTxxtJ04tSQcpLQsXnHw9BSOW1ulUX+NW4PGbBNmX5D31Efz9hSjI8oGKMTazMesHXEQUfJ1oB1TVv0YV1QreifKyuD0b83oyQEvGzaog8vA541bdGHZwEzTVv0YSbgZtMWfbgZVHuxz5UrIWTxCa41bdKDayGLT9pLzJlGVXpzhrk1cBoPmnPp4oHKqRJMu9eDTRp1cLBrRx2y+BcmG1OaYzK5oPsz9xMeLq7PAh4mh/csEAxZfIOIF4so1eYFYnKYc+ocFbL4GLvxepHEpFy7U+6FPr1GhyzeUtUViyH5GntSzi76Fkqp6L6KL/8HMXiOnf2K/4GVXFnkq/G7ql0xSh5hR/qSfZCBm9UUYExaOEfENMYGyVGzFi6L/Eccx7JP8/KPqp9z+mMn1C7WyyLfiItYX3PqfXwfsni3zqTa9UhKMKa6k7MDhktjjqseaS05hmx3lEX+FX5VCffiNvaHLN771BzD9mPabbZ9+AEb0ukZnMX5zrZcXf4DFGSfOaHbeBgAAAAASUVORK5CYII="/>
+    </g>
+  </g>
+</svg>
