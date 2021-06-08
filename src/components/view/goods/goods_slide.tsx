@@ -25,6 +25,7 @@ export const GoodsSlide = () => {
                     verticalSwiping={false}
                     autoplay={true}
                     autoplaySpeed={5000}
+                    centerPadding={'0px'}
                 >
                     {goodsData?.getGoodsList?.goodsList?.map((item: any, index: number) => {
                         return (

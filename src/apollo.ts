@@ -1,7 +1,7 @@
-import { ApolloClient, createHttpLink, InMemoryCache, makeVar, split } from '@apollo/client';
+import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, makeVar, split } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
-import { RetryLink } from '@apollo/client/link/retry';
+// import { RestLink } from 'apollo-link-rest';
 
 export const isOpenedInVar = makeVar(false);
 export const isSoundOnInVar = makeVar(false);
@@ -22,15 +22,19 @@ const wsLink = new WebSocketLink({
     },
 });
 
-const httpLink = new RetryLink().split(
-    (operation) => operation.getContext().version === 1,
-    createHttpLink({
-        uri: process.env.NODE_ENV === 'production' ? 'https://op.thesaracen.com:5000/graphql' : 'http://localhost:5000/graphql',
-    }),
-    createHttpLink({
-        uri: process.env.NODE_ENV === 'production' ? 'https://shop.thesaracen.com:5000/graphql' : 'http://localhost:5000/graphql',
-    })
-);
+const httpLink = createHttpLink({
+    uri: process.env.NODE_ENV === 'production' ? 'https://op.thesaracen.com:5000/graphql' : 'http://localhost:5000/graphql',
+});
+
+// const link = new RestLink({
+//     endpoints: { shop: 'http://localhost:5001' },
+//     headers: {
+//         accept: '*/*',
+//     },
+// });
+// const httpLink2 = createHttpLink({
+//     uri: process.env.NODE_ENV === 'production' ? 'https://shop.thesaracen.com:5000/graphql' : 'http://localhost:5001/graphql',
+// });
 
 const splitLink = split(
     ({ query }) => {
@@ -42,6 +46,7 @@ const splitLink = split(
 );
 
 export const client = new ApolloClient({
+    // link: ApolloLink.from([link, splitLink]),
     link: splitLink,
     cache: new InMemoryCache({
         typePolicies: {

@@ -608,6 +608,7 @@ video {
   display: inline-block;
   vertical-align: top;
   text-align: left;
+  max-width: 650px;
 }
 
 .video {
@@ -712,7 +713,7 @@ video {
 .live_sound_on_btn {
   position: absolute;
   left: 15px;
-  top: 10%;
+  top: 130px;
   z-index: 80;
   padding: 12px 21px 11px 20px;
   background-color: rgba(0, 0, 0, 0.6);
@@ -920,7 +921,7 @@ video {
   word-break: break-all;
   will-change: bottom;
   max-height: 160px;
-  bottom: 10%;
+  bottom: 130px;
 }
 
 .comments_inner {
@@ -1055,15 +1056,15 @@ video {
 
 .goods_list_li {
   position: relative;
-  padding: 7.5px 47px 7.5px 0;
+  padding: 7.5px 0px 7.5px 0;
 }
 
 .thumbnail {
   position: absolute;
   left: 0;
   top: 0;
-  width: 76px;
-  height: 76px;
+  width: 80px;
+  height: 80px;
   border-radius: 10px;
   background-color: white;
 }
@@ -1086,7 +1087,7 @@ video {
           flex-direction: column;
   -webkit-justify-content: center;
           justify-content: center;
-  height: 76px;
+  height: 80px;
 }
 
 .goods_info_name {
@@ -1132,6 +1133,34 @@ video {
   line-height: 1.43;
   letter-spacing: -0.28px;
   color: #767678;
+}
+
+.goods_btn_wrapper {
+  display: -webkit-flex;
+  display: flex;
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+}
+
+.goods_btn_common {
+  -webkit-flex-grow: 1;
+          flex-grow: 1;
+  padding: 5px 20px;
+  border: 1px solid rgb(253, 121, 168);
+  border-radius: 10px;
+  letter-spacing: 0.05rem;
+  font-weight: 500;
+}
+
+.goods_btn_basket {
+  margin-right: 10px;
+  color: rgb(253, 121, 168);
+}
+
+.goods_btn_buy {
+  color: white;
+  background-color: rgb(253, 121, 168);
 }
 
 .animation_field {

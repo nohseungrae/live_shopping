@@ -4,6 +4,7 @@ export const Notice = () => {
     return (
         <a href={'https://thesaracen.com/'} className={`notice`} target={'_blank'} rel={'noopener noreferrer'}>
             <div
+                style={{ padding: '5px 10px' }}
                 onClick={(e: any) => {
                     e.stopPropagation();
                 }}
