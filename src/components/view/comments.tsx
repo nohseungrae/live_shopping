@@ -30,11 +30,10 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
 
     useEffect(() => {
         let onMessageReceived = async function (event: any) {
+            console.log(event, 'event');
             const isSDKReady = event.name === TIM.EVENT.SDK_READY ? true : false;
-            if (isSDKReady) {
-                const { messageMapping } = await getAllMessage();
-                setMessageFunc([...messageMapping]);
-            }
+            const { messageMapping } = await getAllMessage();
+            setMessageFunc([...messageMapping]);
         };
         tim.on(TIM.EVENT.MESSAGE_RECEIVED, onMessageReceived);
         tim.on(TIM.EVENT.SDK_READY, onMessageReceived);
@@ -47,7 +46,9 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
 
     useEffect(() => {
         if (commentsEndRef.current) {
+            console.log('wheel');
             commentsEndRef.current.onscroll = (e: any) => {
+                e.preventDefault();
                 console.log(e.target.scrollHeight, 'e.target.scrollHeight');
                 console.log(e.target.scrollTop, 'e.target.scrollTop');
                 console.log(e.target.offsetHeight, 'e.target.offsetHeight');

@@ -15,7 +15,10 @@ export const ViewHeader: React.FC<IViewHeaderProps> = ({ count, countSetter }) =
     const isFullOn = useReactiveVar(isFullOnInVar);
     const headerStyles = useMemo(() => 'absolute top-0 left-0 z-40 w-full', []);
 
-    tim.on(TIM.EVENT.CONVERSATION_LIST_UPDATED, (e: any) => getGroupOnlineMembers(countSetter));
+    // tim.on(TIM.EVENT.GROUP_SYSTEM_NOTICE_RECEIVED, (e: any) => getGroupOnlineMembers(countSetter));
+    tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, (e: any) => {
+        console.log(e);
+    });
 
     return (
         <header className={headerStyles}>

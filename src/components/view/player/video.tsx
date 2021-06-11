@@ -1,21 +1,34 @@
+import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
-import { isLiveInVar } from '../../../apollo';
+import { isLiveInVar, isOpenedInVar } from '../../../apollo';
 import { useGetStreamKey } from '../../../hooks/useKey';
 
 export const Video = () => {
-    const [flvUrl, setFlvUrl] = useState('');
+    const [flvUrl, setFlvUrl] = useState<any>(null);
     const { data } = useGetStreamKey();
     const ref = useRef<any>(null);
+
+    const isOpened = useReactiveVar(isOpenedInVar);
 
     useEffect(() => {
         if (ref?.current) {
             if (data?.getStreamKey) {
-                const flv = `https://live.thesaracen.com/${data?.getStreamKey?.streamKey.split('?').join('.flv?')}`;
-                setFlvUrl(flv);
+                ref.current.poster = '/assets/images/thumbnail.jpg';
             }
         }
     }, [ref.current]);
+
+    const reactPlayerConfig = {
+        url: isOpened ? `https://live.thesaracen.com/${data?.getStreamKey?.streamKey.split('?').join('.flv?')}` : '',
+        light: false,
+        volume: 1,
+        muted: true,
+        width: '100%',
+        height: '100%',
+        playsinline: isOpened,
+        playing: isOpened,
+    };
     return (
         <div className={'video_container'}>
             <div className={'video_source_shadow relative w-full h-full'}>
@@ -23,18 +36,11 @@ export const Video = () => {
                     <div className={'video_source_shadow absolute w-full h-full'}>
                         <div className={'video_source_wrapper relative w-full h-full'}>
                             {/* <div ref={ref} id="playerView"></div> */}
-                            {/* <ReactPlayer
+                            <ReactPlayer
                                 className={'react_player'}
                                 ref={ref}
-                                url={flvUrl}
-                                light={false}
-                                volume={1}
-                                muted={true}
-                                width={'100%'}
-                                height={'100%'}
-                                playsinline={true}
-                                playing={true}
-                                fallback={<div>ㅎㅇ</div>}
+                                {...reactPlayerConfig}
+                                // fallback={<div>ㅎㅇ</div>}
                                 //플레이어의 재생 속도 설정◦ YouTube, Wistia 및 파일 경로에서만 지원
                                 // playbackRate={1}
 
@@ -70,27 +76,30 @@ export const Video = () => {
                                 }}
                                 onError={(e: any, data?: any, hlsInstance?: any, hlsGlobal?: any) => {
                                     console.log('error', e.target, data);
-                                    switch (e.target.error.code) {
-                                        case e.target.error.MEDIA_ERR_ABORTED:
-                                            alert('You aborted the video playback.');
-                                            break;
-                                        case e.target.error.MEDIA_ERR_NETWORK:
-                                            alert('A network error caused the video download to fail part-way.');
-                                            break;
-                                        case e.target.error.MEDIA_ERR_DECODE:
-                                            alert(
-                                                'The video playback was aborted due to a corruption problem or because the video used features your browser did not support.'
-                                            );
-                                            break;
-                                        case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                                            alert(
-                                                'The video could not be loaded, either because the server or network failed or because the format is not supported.'
-                                            );
-                                            break;
-                                        default:
-                                            alert('An unknown error occurred.');
-                                            break;
-                                    }
+                                    // const reactPlayer = document.querySelector('react_player');
+                                    // reactPlayer?.removeChild(e.target);
+                                    // switch (e.target.error.code) {
+                                    //     case e.target.error.MEDIA_ERR_ABORTED:
+                                    //         alert('You aborted the video playback.');
+                                    //         break;
+                                    //     case e.target.error.MEDIA_ERR_NETWORK:
+                                    //         alert('A network error caused the video download to fail part-way.');
+                                    //         break;
+                                    //     case e.target.error.MEDIA_ERR_DECODE:
+                                    //         alert(
+                                    //             'The video playback was aborted due to a corruption problem or because the video used features your browser did not support.'
+                                    //         );
+                                    //         break;
+                                    //     case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                                    //         alert(
+                                    //             'The video could not be loaded, either because the server or network failed or because the format is not supported.'
+                                    //         );
+                                    //         break;
+                                    //     default:
+                                    //         alert('An unknown error occurred.');
+                                    //         break;
+                                    // }
+                                    return;
                                     if (e.isTrusted) {
                                         console.log(hlsGlobal, hlsInstance);
                                     }
@@ -115,7 +124,7 @@ export const Video = () => {
                                         forceFLV: true,
                                     },
                                 }}
-                            /> */}
+                            />
                         </div>
                     </div>
                 </div>
