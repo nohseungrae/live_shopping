@@ -8,6 +8,7 @@ export interface IUser {
     avatar: string;
     nick: string;
     gender: string;
+    level: number;
 }
 
 //TIM 인스턴스 생성
@@ -69,6 +70,7 @@ export const joinGroup = async () => {
     try {
         const joinGroup = await tim.joinGroup({
             groupID: Constants.groupID,
+            applyMessage: '그룹에 참여되었습니다.',
             type: TIM.TYPES.GRP_MEETING,
         });
         // console.log(joinGroup);
@@ -140,18 +142,19 @@ export const getAllMessage = async () => {
                 break;
         }
         const conversationID = `${TIM.TYPES.CONV_GROUP}${Constants.groupID}`;
+        console.log(conversationID);
         // const groupID = groupList.data.groupList[0].groupID;
         // const groupName = groupList.data.groupList[0].name;
 
-        // const conList = await tim.getConversationList();
-
+        const conList = await tim.getConversationList();
+        console.log(conList.data.conversationList);
         // console.log('groupSearchById : ', groupSearchById, conversationID);
         // console.log('joinGroup : ', joinGroup);
         // console.log('conList : ', conList);
         const groupName = groupSearchById.data.group.name;
 
         if (groupName === 'saralive') {
-            await tim.setMessageRead({ conversationID });
+            // await tim.setMessageRead({ conversationID });
             let isCompleted = false;
             let messageListMapping: any[] = [];
             let nextReqMessageID = '';
@@ -209,6 +212,25 @@ export const getGroupOnlineMembers = async (countSetter: any) => {
         return true;
     } catch (error) {
         console.log('그룹 멤버 카운트 에러', error);
+        return false;
+    }
+};
+export const getGroupMembers = async () => {
+    try {
+        const count = await tim.getGroupMemberList({ groupID: Constants.groupID, count: 100, offset: 0 });
+        console.log(count);
+        return true;
+    } catch (error) {
+        console.log('그룹 멤버 리스트 에러', error);
+        return false;
+    }
+};
+export const removeMessage = async (message: any) => {
+    try {
+        const result = await tim.revokeMessage('GROUPsaraChatRoom');
+        console.log(result);
+    } catch (error) {
+        console.log('메시지 취소 실패', error);
         return false;
     }
 };

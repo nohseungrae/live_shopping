@@ -5,7 +5,7 @@ export const PlayerImg = () => {
         <div
             className={'player_img'}
             style={{
-                backgroundImage: `url(/assets/images/thumbnail.jpg)`,
+                backgroundImage: `url(static/pc/images/live_thumbnail.jpg)`,
             }}
         ></div>
     );

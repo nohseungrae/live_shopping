@@ -1,8 +1,8 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { isFullOnInVar } from '../../apollo';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import { getGroupOnlineMembers } from '../../hooks/useTim';
+import { getGroupMembers, getGroupOnlineMembers } from '../../hooks/useTim';
 import { tim } from '../..';
 import TIM from 'tim-js-sdk';
 
@@ -15,11 +15,21 @@ export const ViewHeader: React.FC<IViewHeaderProps> = ({ count, countSetter }) =
     const isFullOn = useReactiveVar(isFullOnInVar);
     const headerStyles = useMemo(() => 'absolute top-0 left-0 z-40 w-full', []);
 
-    // tim.on(TIM.EVENT.GROUP_SYSTEM_NOTICE_RECEIVED, (e: any) => getGroupOnlineMembers(countSetter));
-    tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, (e: any) => {
-        console.log(e);
-    });
+    // tim.on(TIM.EVENT.MESSAGE_REVOKED, (e: any) => getGroupOnlineMembers(countSetter));
+    // tim.on(TIM.EVENT.GROUP_SYSTEM_NOTICE_RECEIVED, );
+    // tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, (e: any) => {
+    //     console.log(e);
+    // });
+    useEffect(() => {
+        const timer = setInterval(() => {
+            getGroupOnlineMembers(countSetter);
+            getGroupMembers();
+        }, 5000);
 
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
     return (
         <header className={headerStyles}>
             <h1>
@@ -48,7 +58,7 @@ export const ViewHeader: React.FC<IViewHeaderProps> = ({ count, countSetter }) =
             {isFullOn ? null : (
                 <div className={'live_header_title'}>
                     <a href={'https://thesaracen.com'} className={'live_header_link'}>
-                        <img className={'img'} src={'assets/images/saracen_logo.png'} />
+                        <img className={'img'} src={'static/pc/images/saracen_logo.png'} />
                     </a>
                     <h2 className={'live_header_name'}>사라센 라이브 방송 타이틀</h2>
                     <div className={'live_header_item_box'}>

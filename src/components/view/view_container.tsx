@@ -1,4 +1,4 @@
-import { useReactiveVar } from '@apollo/client';
+import { OnSubscriptionDataOptions, useReactiveVar } from '@apollo/client';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
     isAtLeastInVar,
@@ -26,7 +26,7 @@ import { SoundOnBtn } from './sound_on_btn';
 import { SoundOffBtn } from './sound_off_btn';
 import { gql, useMutation } from '@apollo/client';
 import { HeartBtn } from './heart_btn/heart_btn';
-import { useGetChatQnaList } from '../../hooks/useQna';
+import { GET_CHAT_QNA, useAnswerdChatQnaSub, useDeletedChatQnaSub, useGetChatQnaList, usePendingChatQnaSub } from '../../hooks/useQna';
 import TIM from 'tim-js-sdk';
 import { tim } from '../../index';
 import { AtLeastBtn } from './at_least_btn';
@@ -36,6 +36,7 @@ import { GoodsBox } from './goods/goods_box';
 import { ShareBtn } from './share_btn';
 import { Notice } from './notice';
 import { useGetLiveUserInfo } from '../../hooks/useUserInfo';
+import { useHook } from '../../hooks/useHook';
 
 declare global {
     interface Window {
@@ -61,8 +62,108 @@ export interface IMessage {
     username: string;
     text: string;
 }
-let userInfo: IUser = window?.userInfo ?? { userID: localStorage.getItem('userID'), nick: '사라센', gender: 'F', avatar: '' };
+export let userInfo: IUser = window?.userInfo ?? {
+    userID: '308868',
+    nick: '사라센',
+    gender: 'F',
+    avatar: '',
+    level: 0,
+};
 export const ViewContainer = () => {
+    // 서브스크립션
+    // -------------------------------------------------------------------------------------------------------------------------
+    const pendingUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
+        console.log(subscriptionData);
+        const {
+            data: {
+                pendingChatQna: { adminId, answer, content, id, liveId, title, userId, updated_at },
+            },
+        } = subscriptionData;
+        const queryResult = client.readQuery({
+            query: GET_CHAT_QNA,
+            variables: { input: { liveId } },
+        });
+        if (queryResult) {
+            isNewQnaInVar(true);
+            client.writeQuery({
+                query: GET_CHAT_QNA,
+                variables: { input: { liveId } },
+                data: {
+                    ...queryResult,
+                    getChatQnaListByLiveId: {
+                        chatQnaList: [
+                            ...queryResult?.getChatQnaListByLiveId?.chatQnaList,
+                            {
+                                __typename: `ShopLiveChatQna:${id}`,
+                                id,
+                                title,
+                                content,
+                                answer,
+                                liveId,
+                                adminId,
+                                userId,
+                                updated_at,
+                            },
+                        ],
+                    },
+                },
+            });
+        }
+    };
+    const answeredUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
+        const {
+            data: {
+                answeredChatQna: { id, liveId, answer, updated_at },
+            },
+        } = subscriptionData;
+        if (liveId) {
+            isNewQnaInVar(true);
+            client.writeQuery({
+                query: GET_CHAT_QNA,
+                variables: { input: { liveId } },
+                data: {
+                    getChatQnaListByLiveId: {
+                        chatQnaList: [
+                            {
+                                __typename: `ShopLiveChatQna:${id}`,
+                                answer,
+                                updated_at,
+                            },
+                        ],
+                    },
+                },
+            });
+        }
+    };
+    const deletedUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
+        const {
+            data: {
+                deletedChatQna: { id, liveId },
+            },
+        } = subscriptionData;
+        const queryResult = client.readQuery({
+            query: GET_CHAT_QNA,
+            variables: { input: { liveId } },
+        });
+        if (queryResult) {
+            const newChatQnaList = queryResult.getChatQnaListByLiveId.chatQnaList.filter((item: any) => item.id !== id);
+            client.writeQuery({
+                query: GET_CHAT_QNA,
+                variables: { input: { liveId } },
+                data: {
+                    ...queryResult,
+                    getChatQnaListByLiveId: {
+                        chatQnaList: newChatQnaList,
+                    },
+                },
+            });
+        }
+    };
+    const { data: pendingChatQnaSub } = usePendingChatQnaSub(pendingUpdate);
+    const { data: answerdChatQnaSub } = useAnswerdChatQnaSub(answeredUpdate);
+    const { data: deletedChatQnaSub } = useDeletedChatQnaSub(deletedUpdate);
+    // -------------------------------------------------------------------------------------------------------------------------
+    // 서브스크립션 끝
     const [message, setMessage] = useState<IMessage[]>([]);
     const setMessageFunc = useCallback((message: any) => {
         if (message.length < 1) {
@@ -186,13 +287,15 @@ export const ViewContainer = () => {
 
     const wrapperStyles = useMemo(() => 'h-full relative overflow-hidden z-0', []);
 
+    const [mainPlayState, mainPlayStateSetting] = useHook(null);
+
     return (
         <div onClick={ContainerClick} className={'view_container bg-gray-500'}>
             <div className={wrapperStyles}>
                 <ViewHeader count={count} countSetter={countSetter} />
-                <CloseBtn />
+                <CloseBtn playState={mainPlayState} />
                 <Player />
-                {isLive ? <Video /> : null}
+                <Video playState={mainPlayState} playStateSetting={mainPlayStateSetting} />
                 <div className={'dimmed'} />
                 {/* <ShareBtn /> */}
                 <SoundOffBtn />

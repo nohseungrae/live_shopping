@@ -47,97 +47,6 @@ export const QnaBody: React.FC<IProps> = ({ tab }) => {
 
     const isNewQna = useReactiveVar(isNewQnaInVar);
 
-    const pendingUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
-        console.log(subscriptionData);
-        const {
-            data: {
-                pendingChatQna: { adminId, answer, content, id, liveId, title, userId, updated_at },
-            },
-        } = subscriptionData;
-        const queryResult = client.readQuery({
-            query: GET_CHAT_QNA,
-            variables: { input: { liveId } },
-        });
-        if (queryResult) {
-            isNewQnaInVar(true);
-            client.writeQuery({
-                query: GET_CHAT_QNA,
-                variables: { input: { liveId } },
-                data: {
-                    ...queryResult,
-                    getChatQnaListByLiveId: {
-                        chatQnaList: [
-                            ...queryResult?.getChatQnaListByLiveId?.chatQnaList,
-                            {
-                                __typename: `ShopLiveChatQna:${id}`,
-                                id,
-                                title,
-                                content,
-                                answer,
-                                liveId,
-                                adminId,
-                                userId,
-                                updated_at,
-                            },
-                        ],
-                    },
-                },
-            });
-        }
-    };
-    const answeredUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
-        const {
-            data: {
-                answeredChatQna: { id, liveId, answer, updated_at },
-            },
-        } = subscriptionData;
-        if (liveId) {
-            isNewQnaInVar(true);
-            client.writeQuery({
-                query: GET_CHAT_QNA,
-                variables: { input: { liveId } },
-                data: {
-                    getChatQnaListByLiveId: {
-                        chatQnaList: [
-                            {
-                                __typename: `ShopLiveChatQna:${id}`,
-                                answer,
-                                updated_at,
-                            },
-                        ],
-                    },
-                },
-            });
-        }
-    };
-    const deletedUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
-        const {
-            data: {
-                deletedChatQna: { id, liveId },
-            },
-        } = subscriptionData;
-        const queryResult = client.readQuery({
-            query: GET_CHAT_QNA,
-            variables: { input: { liveId } },
-        });
-        if (queryResult) {
-            const newChatQnaList = queryResult.getChatQnaListByLiveId.chatQnaList.filter((item: any) => item.id !== id);
-            client.writeQuery({
-                query: GET_CHAT_QNA,
-                variables: { input: { liveId } },
-                data: {
-                    ...queryResult,
-                    getChatQnaListByLiveId: {
-                        chatQnaList: newChatQnaList,
-                    },
-                },
-            });
-        }
-    };
-    const { data: pendingChatQnaSub } = usePendingChatQnaSub(pendingUpdate);
-    const { data: answerdChatQnaSub } = useAnswerdChatQnaSub(answeredUpdate);
-    const { data: deletedChatQnaSub } = useDeletedChatQnaSub(deletedUpdate);
-
     const values = Object.keys(tab)
         .map((key) => {
             if (tab[key]) {
@@ -145,8 +54,8 @@ export const QnaBody: React.FC<IProps> = ({ tab }) => {
             }
         })
         .filter((item) => item);
-    console.log(qnaData, liveQnaData);
-    console.log(values);
+    // console.log(qnaData, liveQnaData);
+    // console.log(values);
     return (
         <div>
             <h4 className={'blind'}>{values[0]}</h4>

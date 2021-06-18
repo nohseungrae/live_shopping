@@ -5,7 +5,7 @@ import { isFullOnInVar, isSoundOnInVar } from '../../apollo';
 export const SoundOffBtn = () => {
     const isSoundOn = useReactiveVar(isSoundOnInVar);
     const isFullOn = useReactiveVar(isFullOnInVar);
-    let video: HTMLVideoElement | null = document.querySelector('.react_player > video');
+    let video: HTMLVideoElement | null = document.querySelector('.flv_player.main_player');
     const soundOnOff = (e: any) => {
         e.stopPropagation();
         if (video && isSoundOn) {

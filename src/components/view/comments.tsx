@@ -46,13 +46,13 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
 
     useEffect(() => {
         if (commentsEndRef.current) {
-            console.log('wheel');
             commentsEndRef.current.onscroll = (e: any) => {
-                e.preventDefault();
-                console.log(e.target.scrollHeight, 'e.target.scrollHeight');
-                console.log(e.target.scrollTop, 'e.target.scrollTop');
-                console.log(e.target.offsetHeight, 'e.target.offsetHeight');
-                console.log(e.target.offsetTop, 'e.target.offsetTop');
+                e.stopImmediatePropagation();
+                // console.log(e.target);
+                // console.log(e.target.scrollHeight, 'e.target.scrollHeight');
+                // console.log(e.target.scrollTop, 'e.target.scrollTop');
+                // console.log(e.target.offsetHeight, 'e.target.offsetHeight');
+                // console.log(e.target.offsetTop, 'e.target.offsetTop');
                 // console.log(e.target.scrollHeight - e.target.scrollTop === e.target.offsetHeight);
                 if (e.target.offsetHeight !== 160 && e.target.offsetHeight !== 380) {
                     return;

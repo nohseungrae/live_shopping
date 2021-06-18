@@ -17,6 +17,7 @@ const CREATE_LIVE_CHAT_QNA = gql`
         createLiveChatQna(createLiveChatQnaInput: $createLiveChatQnaInput) {
             ok
             chatQnaId
+            error
         }
     }
 `;
@@ -30,12 +31,16 @@ export const CommentWrite: React.FC<ICommentWrite> = ({ setMessageFunc, userID }
     const [createLiveChatQna] = useMutation(CREATE_LIVE_CHAT_QNA, {
         onCompleted: (data: any) => {
             const {
-                createLiveChatQna: { ok },
+                createLiveChatQna: { ok, error },
             } = data;
             if (ok) {
                 const textarea: any = document.querySelector('#write_textarea');
                 textarea.value = '';
                 setComment('');
+            }
+            if (!ok && error) {
+                alert(error);
+                return;
             }
         },
     });

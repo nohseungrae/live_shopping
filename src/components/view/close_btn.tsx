@@ -11,14 +11,16 @@ import {
 } from '../../apollo';
 import { logout, quitGroup } from '../../hooks/useTim';
 import CloseIcon from '@material-ui/icons/Close';
+import { flvDestroy } from '../../hooks/usePlayer';
 
 interface IClose {
     qnaModal?: boolean;
     goodsModal?: boolean;
     basketModal?: boolean;
+    playState?: any;
 }
 
-export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal }) => {
+export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal, playState }) => {
     const close = async (e: any) => {
         e.stopPropagation();
         const reactPlayer: HTMLVideoElement | any = document.querySelector('.react_player video');
@@ -46,9 +48,8 @@ export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal }
             //     isFullOnInVar(false);
             // }
             // await quitGroup();
-            if (reactPlayer) {
-                reactPlayer.src = null;
-                reactPlayer.srcObject = null;
+            if (playState) {
+                flvDestroy(playState);
             }
             const logoutResult = await logout();
             // console.log(logoutResult, "나가요");

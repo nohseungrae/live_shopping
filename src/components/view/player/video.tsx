@@ -1,10 +1,16 @@
 import { useReactiveVar } from '@apollo/client';
+import FlvJs from 'flv.js';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { isLiveInVar, isOpenedInVar } from '../../../apollo';
 import { useGetStreamKey } from '../../../hooks/useKey';
-
-export const Video = () => {
+import { flvLoad } from '../../../hooks/usePlayer';
+export let player2: any;
+interface IVideoProps {
+    playStateSetting?: any;
+    playState?: any;
+}
+export const Video: React.FC<IVideoProps> = ({ playState, playStateSetting }) => {
     const [flvUrl, setFlvUrl] = useState<any>(null);
     const { data } = useGetStreamKey();
     const ref = useRef<any>(null);
@@ -12,31 +18,35 @@ export const Video = () => {
     const isOpened = useReactiveVar(isOpenedInVar);
 
     useEffect(() => {
-        if (ref?.current) {
-            if (data?.getStreamKey) {
-                ref.current.poster = '/assets/images/thumbnail.jpg';
+        if (ref.current && isOpened) {
+            ref.current.poster = 'static/pc/images/live_thumbnail.jpg';
+            if (!playState) {
+                playStateSetting(flvLoad(data?.getStreamKey?.streamKey, player2, ref));
             }
         }
-    }, [ref.current]);
+    });
 
-    const reactPlayerConfig = {
-        url: isOpened ? `https://live.thesaracen.com/${data?.getStreamKey?.streamKey.split('?').join('.flv?')}` : '',
-        light: false,
-        volume: 1,
-        muted: true,
-        width: '100%',
-        height: '100%',
-        playsinline: isOpened,
-        playing: isOpened,
-    };
+    // const reactPlayerConfig = {
+    //     url: isOpened ? `https://live.thesaracen.com/${data?.getStreamKey?.streamKey.split('?').join('.flv?')}` : '',
+    //     light: false,
+    //     volume: 1,
+    //     muted: true,
+    //     width: '100%',
+    //     height: '100%',
+    //     playsinline: isOpened,
+    //     playing: isOpened,
+    // };
     return (
         <div className={'video_container'}>
             <div className={'video_source_shadow relative w-full h-full'}>
                 <div className={'video_source_container w-full h-full'}>
                     <div className={'video_source_shadow absolute w-full h-full'}>
                         <div className={'video_source_wrapper relative w-full h-full'}>
+                            <video ref={ref} className="flv_player main_player" autoPlay>
+                                메인 사라 라이브
+                            </video>
                             {/* <div ref={ref} id="playerView"></div> */}
-                            <ReactPlayer
+                            {/* <ReactPlayer
                                 className={'react_player'}
                                 ref={ref}
                                 {...reactPlayerConfig}
@@ -100,9 +110,6 @@ export const Video = () => {
                                     //         break;
                                     // }
                                     return;
-                                    if (e.isTrusted) {
-                                        console.log(hlsGlobal, hlsInstance);
-                                    }
                                 }}
                                 onPlay={() => {
                                     const dim: HTMLDivElement | null = document.querySelector('.dimmed');
@@ -124,7 +131,7 @@ export const Video = () => {
                                         forceFLV: true,
                                     },
                                 }}
-                            />
+                            /> */}
                         </div>
                     </div>
                 </div>

@@ -15,17 +15,16 @@ export const isLiveInVar = makeVar(false);
 export const isNewQnaInVar = makeVar(false);
 export const isAtLeastInVar = makeVar(false);
 
+console.log(process.env.REACT_APP_WS_HOST);
 const wsLink = new WebSocketLink({
-    // uri: process.env.NODE_ENV === 'production' ? 'wss://op.thesaracen.com:5000/graphql' : `ws://localhost:5000/graphql`,
-    uri: 'ws://localhost:5000/graphql',
+    uri: process.env.REACT_APP_WS_HOST as string,
     options: {
         reconnect: true,
     },
 });
 
 const httpLink = createHttpLink({
-    // uri: process.env.NODE_ENV === 'production' ? 'https://op.thesaracen.com:5000/graphql' : 'http://localhost:5000/graphql',
-    uri: 'http://localhost:5000/graphql',
+    uri: process.env.REACT_APP_MAIN_GRAPHQL_HOST as string,
 });
 
 // const link = new RestLink({

@@ -2,7 +2,7 @@ import React from 'react';
 import { isSoundOnInVar } from '../../apollo';
 
 export const SoundOnBtn = () => {
-    let video: HTMLVideoElement | null = document.querySelector('.react_player > video');
+    let video: HTMLVideoElement | null = document.querySelector('.flv_player.main_player');
     const soundOn = (e: any) => {
         e.stopPropagation();
         if (video) {
