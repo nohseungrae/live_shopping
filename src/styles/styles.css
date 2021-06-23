@@ -519,6 +519,10 @@ video {
   border: 1px solid black;
 }
 
+img {
+  margin: auto;
+}
+
 *,
 ::before,
 ::after {
@@ -534,6 +538,11 @@ video {
   border-color: #e5e7eb; /* 2 */
 }
 
+#saralive_root i {
+  font-style: inherit;
+  color: #000000;
+}
+
 #saralive_root *,
 ::before,
 ::after {
@@ -545,7 +554,8 @@ video {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  border-radius: 0.7em;
+  overflow: hidden;
 }
 
 .flv_player {
@@ -572,6 +582,7 @@ video {
   background: black;
   position: relative;
   cursor: pointer;
+  border-radius: 0.7em;
 }
 
 #saralive_root .video_wrap {
@@ -583,7 +594,6 @@ video {
   bottom: 0;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
 }
 
 #saralive_root .view {
@@ -805,6 +815,7 @@ video {
   line-height: 1.3;
   letter-spacing: -0.3px;
   font-weight: 600;
+  color: inherit;
 }
 
 #saralive_root .live_header_item_box {
@@ -815,6 +826,7 @@ video {
   line-height: 0;
   -webkit-align-items: center;
           align-items: center;
+  color: inherit;
 }
 
 #saralive_root .live_close_btn {
@@ -1066,7 +1078,7 @@ video {
 }
 
 #saralive_root .goods_list_ul {
-  padding: 7.5px 20px;
+  padding: 0px 20px;
   -webkit-flex: 1 1 auto;
           flex: 1 1 auto;
 }
@@ -1110,7 +1122,7 @@ video {
           flex-direction: column;
   -webkit-justify-content: center;
           justify-content: center;
-  height: 80px;
+  height: 85px;
   margin-left: 10px;
 }
 
@@ -1170,6 +1182,7 @@ video {
 #saralive_root .goods_market_price {
   position: relative;
   line-height: 1rem;
+  color: #000000;
 }
 
 #saralive_root .goods_market_price::before {
@@ -1190,6 +1203,7 @@ video {
   -webkit-align-items: center;
           align-items: center;
   margin-top: 3px;
+  color: #000000;
 }
 
 #saralive_root .goods_info_brandname {
@@ -1222,6 +1236,7 @@ video {
   border-radius: 10px;
   letter-spacing: 0.05rem;
   font-weight: 500;
+  line-height: inherit;
 }
 
 #saralive_root .goods_btn_basket {

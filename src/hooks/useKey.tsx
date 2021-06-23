@@ -8,6 +8,7 @@ export const GET_STREAMKEY = gql`
             isLive
             imKey
             isOnline
+            isShow
         }
     }
 `;

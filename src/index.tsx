@@ -6,6 +6,11 @@ import { App } from './components/app';
 import reportWebVitals from './reportWebVitals';
 import './styles/styles.css';
 
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
+
 import TIM from 'tim-js-sdk';
 
 let options = {

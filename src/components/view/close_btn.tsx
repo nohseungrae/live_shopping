@@ -28,7 +28,7 @@ export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal, 
             const modalWrap: HTMLDivElement = document.querySelector('.qna_modal') as HTMLDivElement;
             modalWrap.classList.remove('animate-modal');
             modalWrap.classList.add('animate-modal-out');
-            setTimeout(() => {
+            const closeBox = () => {
                 if (qnaModal) {
                     isQnaModalOnInVar(false);
                 }
@@ -38,20 +38,17 @@ export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal, 
                 if (basketModal) {
                     isBasketModalOnInVar(false);
                 }
-            }, 1000);
+            };
+            const timer = setTimeout(closeBox, 1000);
         } else {
-            // if (result) {
-            //     isOpenedInVar(false);
-            //     isGoodsModalOnInVar(false);
-            //     isQnaModalOnInVar(false);
-            //     isWriteOnInVar(false);
-            //     isFullOnInVar(false);
-            // }
-            // await quitGroup();
+            const wheel = window.localStorage.getItem('wheel');
+            if (wheel === 'false') {
+                window.localStorage.setItem('wheel', 'true');
+            }
             if (playState) {
                 flvDestroy(playState);
             }
-            const logoutResult = await logout();
+            await logout();
             // console.log(logoutResult, "나가요");
             isOpenedInVar(false);
             isGoodsModalOnInVar(false);
@@ -61,7 +58,6 @@ export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal, 
             isFullOnInVar(false);
         }
     };
-    console.log(process.env.PUBLIC_URL);
     return (
         <button className={qnaModal || goodsModal ? 'live_close_modal_btn' : 'live_close_btn'} onClick={close}>
             <span className={'blind'}>나가기</span>

@@ -1,7 +1,7 @@
-import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, makeVar, split } from '@apollo/client';
+import { ApolloClient, createHttpLink, InMemoryCache, makeVar, split } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
-// import { RestLink } from 'apollo-link-rest';
+import fetch from 'cross-fetch';
 
 export const isOpenedInVar = makeVar(false);
 export const isSoundOnInVar = makeVar(false);
@@ -15,7 +15,7 @@ export const isLiveInVar = makeVar(false);
 export const isNewQnaInVar = makeVar(false);
 export const isAtLeastInVar = makeVar(false);
 
-console.log(process.env.REACT_APP_WS_HOST);
+// console.log(process.env.REACT_APP_WS_HOST);
 const wsLink = new WebSocketLink({
     uri: process.env.REACT_APP_WS_HOST as string,
     options: {
@@ -24,30 +24,18 @@ const wsLink = new WebSocketLink({
 });
 
 const httpLink = createHttpLink({
+    fetch,
     uri: process.env.REACT_APP_MAIN_GRAPHQL_HOST as string,
 });
-
-// const link = new RestLink({
-//     endpoints: { shop: 'http://localhost:5001' },
-//     headers: {
-//         accept: '*/*',
-//     },
-// });
-// const httpLink2 = createHttpLink({
-//     uri: process.env.NODE_ENV === 'production' ? 'https://shop.thesaracen.com:5000/graphql' : 'http://localhost:5001/graphql',
-// });
-
 const splitLink = split(
-    ({ query }) => {
+    function ({ query }) {
         const definition = getMainDefinition(query);
         return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
     },
     wsLink,
     httpLink
 );
-
 export const client = new ApolloClient({
-    // link: ApolloLink.from([link, splitLink]),
     link: splitLink,
     cache: new InMemoryCache({
         typePolicies: {

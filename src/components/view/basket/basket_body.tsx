@@ -1,8 +1,6 @@
 import React from 'react';
 import { useGetWishlist } from '../../../hooks/useBasket';
-import { useGetGoods } from '../../../hooks/useGoods';
 import { useGetStreamKey } from '../../../hooks/useKey';
-import { useGetLiveUserInfo } from '../../../hooks/useUserInfo';
 
 export const BasketBody: React.FC = () => {
     const { data: getStreamData } = useGetStreamKey();

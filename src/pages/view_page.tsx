@@ -1,16 +1,21 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { isLiveInVar, isOpenedInVar } from '../apollo';
 import { ViewLayout } from '../components/view/view_layout';
 import { useGetStreamKey } from '../hooks/useKey';
 import { useCallback } from 'react';
-import { flvDestroy, flvLoad } from '../hooks/usePlayer';
-import FlvJs from 'flv.js';
+import { isIE } from 'react-device-detect';
+import { flvLoad } from '../hooks/usePlayer';
+import { clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+
 export let player1: any;
 export const ViewPage = () => {
     const ref = useRef<any>(null);
 
     const openView = useCallback(() => {
+        if (isIE) {
+            return alert('라이브 쇼는 IE에서 지원하지 않습니다.\n다른 브라우저를 이용해 주세요.(크롬, 사파리, 엣지 등...)');
+        }
         if (player1 && player1._mediaInfo) {
             console.log(player1);
 
@@ -23,27 +28,24 @@ export const ViewPage = () => {
     const isLive = useReactiveVar(isLiveInVar);
     const { data } = useGetStreamKey();
 
-    // const reactPlayerConfig = {
-    //     url: isOpened ? '' : `https://live.thesaracen.com/${data?.getStreamKey?.streamKey.split('?').join('.flv?')}`,
-    //     light: false,
-    //     volume: 1,
-    //     muted: true,
-    //     width: '100%',
-    //     height: '100%',
-    //     playsinline: isOpened ? false : true,
-    //     playing: isOpened ? false : true,
-    //     controls: true,
-    // };
-
     useEffect(() => {
+        const replay = async (player: any) => {
+            try {
+                await player?.unload();
+                await player?.attachMediaElement(ref.current);
+                await player?.load();
+                await player?.play();
+            } catch (error) {
+                player = flvLoad(data?.getStreamKey?.streamKey, player1, ref);
+                console.log(error);
+            }
+        };
+
         if (ref.current && !isOpened) {
             if (!player1) {
                 player1 = flvLoad(data?.getStreamKey?.streamKey, player1, ref);
             } else {
-                player1.unload();
-                player1.attachMediaElement(ref.current);
-                player1.load();
-                player1.play();
+                replay(player1);
             }
             // console.log(player1._msectl);
             // player1._msectl.onsourceclose = (err: any) => {
@@ -67,6 +69,18 @@ export const ViewPage = () => {
             isLiveInVar(false);
         }
     }, [data]);
+
+    const body = document.querySelector('body') as HTMLBodyElement;
+
+    useEffect(() => {
+        if (body) {
+            if (isLive && isOpened) {
+                disableBodyScroll(body);
+            } else {
+                enableBodyScroll(body);
+            }
+        }
+    }, [isLive, isOpened]);
 
     return (
         <>

@@ -19,7 +19,7 @@ import { CommentWrite } from './comment_write';
 import { QnaBox } from './qna/qna_box';
 import { QnaBtn } from './qna_btn';
 import { ViewHeader } from './view_header';
-import { getGroupOnlineMembers, IUser, login, myProfile, updateProfile } from '../../hooks/useTim';
+import { IUser, login, myProfile, updateProfile } from '../../hooks/useTim';
 import { Player } from './player/player';
 import { Video } from './player/video';
 import { SoundOnBtn } from './sound_on_btn';
@@ -33,15 +33,13 @@ import { AtLeastBtn } from './at_least_btn';
 import { GoodsSlide } from './goods/goods_slide';
 import { BasketBox } from './basket/basket_box';
 import { GoodsBox } from './goods/goods_box';
-import { ShareBtn } from './share_btn';
-import { Notice } from './notice';
-import { useGetLiveUserInfo } from '../../hooks/useUserInfo';
 import { useHook } from '../../hooks/useHook';
 
 declare global {
     interface Window {
         userKey: string;
         userInfo: IUser;
+        openLogin: any;
     }
 }
 
@@ -67,13 +65,12 @@ export let userInfo: IUser = window?.userInfo ?? {
     nick: '사라센',
     gender: 'F',
     avatar: '',
-    level: 0,
+    level: '0',
 };
 export const ViewContainer = () => {
     // 서브스크립션
     // -------------------------------------------------------------------------------------------------------------------------
     const pendingUpdate = ({ client, subscriptionData }: OnSubscriptionDataOptions) => {
-        console.log(subscriptionData);
         const {
             data: {
                 pendingChatQna: { adminId, answer, content, id, liveId, title, userId, updated_at },

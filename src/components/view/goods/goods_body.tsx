@@ -7,6 +7,7 @@ import { discount } from '../../../utils/discount';
 import { userInfo } from '../view_container';
 import { BasketBtn } from './basket_btn';
 import { BuyBtn } from './buy_btn';
+import { LoginBtn } from './login_btn';
 
 export const GoodsBody: React.FC = () => {
     const userKey = window.userKey;
@@ -35,7 +36,6 @@ export const GoodsBody: React.FC = () => {
                         </div>
                     ) : (
                         goodsData?.getGoodsList?.goodsList?.map((item: any, index: number) => {
-                            console.log(item);
                             const priceSeperate = (level: number) => {
                                 let marketPrice = 0;
                                 let salePrice = 0;
@@ -53,9 +53,7 @@ export const GoodsBody: React.FC = () => {
                                 }
                                 return { marketPrice, salePrice };
                             };
-                            const { marketPrice, salePrice } = priceSeperate(userInfo?.level);
-                            // const marketPrice = item.goodsId.template[0].prices[0].market_price;
-                            // const salePrice = item.goodsId.template[0].prices[0].sale_price;
+                            const { marketPrice, salePrice } = priceSeperate(Number(userInfo?.level));
                             return (
                                 <li key={index} className={'goods_list_li'}>
                                     <a
@@ -81,8 +79,14 @@ export const GoodsBody: React.FC = () => {
                                         </div>
                                     </a>
                                     <div className={'goods_btn_wrapper'}>
-                                        <BasketBtn />
-                                        <BuyBtn success={data?.getSarapayUser?.success} />
+                                        {Number(userInfo.level) === 0 && userInfo.nick === 'guest' ? (
+                                            <LoginBtn title={'로그인 하기'} />
+                                        ) : (
+                                            <>
+                                                <BasketBtn />
+                                                <BuyBtn success={data?.getSarapayUser?.success} />
+                                            </>
+                                        )}
                                     </div>
                                 </li>
                             );

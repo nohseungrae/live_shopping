@@ -38,8 +38,7 @@
 // }
 // console.log(player);
 import flvjs from 'flv.js';
-// import { Events } from 'flv.js/d.ts/flv';
-const createPlayer = (mediaDataSource: { type: string; url: string }) => {
+export const createPlayer = (mediaDataSource: { type: string; url: string }) => {
     return flvjs.createPlayer(mediaDataSource, {
         lazyLoad: true,
         lazyLoadMaxDuration: 3 * 60,
@@ -55,8 +54,9 @@ export const flvLoadMds = (mediaDataSource: { type: string; url: string }, playe
     // console.log(typeof player, player);
     if (typeof player !== 'undefined') {
         if (player != null) {
+            console.log(player, '-------------------------------------');
             player.unload();
-            player.detachMediaElement();
+            player?.detachMediaElement();
             player.destroy();
             player = null;
         }
@@ -65,15 +65,14 @@ export const flvLoadMds = (mediaDataSource: { type: string; url: string }, playe
     player?.attachMediaElement(ref?.current);
     player?.load();
 
-    player?.on(flvjs.Events.SCRIPTDATA_ARRIVED, (e: any) => {
-        console.log('완료!!!!!!!!!!!!!', e);
+    player?.on(flvjs.Events.SCRIPTDATA_ARRIVED, async (e: any) => {
         const dim: HTMLDivElement | null = document.querySelector('.dimmed');
         const playerImg: HTMLDivElement | null = document.querySelector('.player');
         if (dim && playerImg) {
             playerImg.style.zIndex = '0';
             dim.style.display = 'none';
         } else {
-            player.play();
+            await player.play();
         }
     });
     // player?.on(flvjs.Events.MEDIA_INFO, (e: any) => {
@@ -101,30 +100,23 @@ export const flvLoadMds = (mediaDataSource: { type: string; url: string }, playe
     let decodedFrames = 0;
     player?.on(flvjs.Events.STATISTICS_INFO, async (e: any) => {
         // console.log('STATISTICS_INFO!!!!!!!!!!!!!!!!!!!!!!!!', e);
-        console.log(decodedFrames, e.decodedFrames);
+        // console.log(decodedFrames, e.decodedFrames);
         if (decodedFrames === e.decodedFrames) {
             await flvDestroy(player);
             player = await createPlayer(mediaDataSource);
-            player?.attachMediaElement(ref?.current);
-            player?.load();
+            await player?.attachMediaElement(ref?.current);
+            await player?.load();
             return;
         }
         decodedFrames = e.decodedFrames;
         if (decodedFrames === 0) {
-            // await player.pause();
-            // await player.unload();
-            // // await player?.attachMediaElement(ref.current);
-            // await player?.load();
-            // await player?.play();
             await flvDestroy(player);
             player = await createPlayer(mediaDataSource);
-            player?.attachMediaElement(ref?.current);
-            player?.load();
+            await player?.attachMediaElement(ref?.current);
+            await player?.load();
         }
     });
-
-    // console.log('flvjs feature list', flvjs.getFeatureList());
-    flvjs.LoggingControl.addLogListener(async function (log) {
+    flvjs?.LoggingControl.addLogListener(async function (log) {
         // console.log(log, ' ----------- 로그');
         if (log === 'warn') {
             await player?.pause();
@@ -140,7 +132,7 @@ export const flvLoadMds = (mediaDataSource: { type: string; url: string }, playe
     // console.log(player.buffered, player.currentTime);
     // player?.on('error', (err: any) => console.log('err', err));
     player?.on(flvjs.Events.ERROR, async (err: any) => {
-        console.log(`A network error was detected on camera Attempting to restart it.`);
+        console.log(`네트워크 에러가 감지되어 재시작을 합니다.`);
     });
     player.muted = true;
     // const mediaSource = new MediaSource();
@@ -177,7 +169,6 @@ export const flvLoadMds = (mediaDataSource: { type: string; url: string }, playe
     return player;
 };
 export const flvLoad = (streamKey: string, player: any, ref: any) => {
-    console.log('isSupported: ' + flvjs.isSupported(), streamKey);
     const mediaDataSource = {
         type: 'flv',
         url: `https://live.thesaracen.com/${streamKey.split('?').join('.flv?')}`,

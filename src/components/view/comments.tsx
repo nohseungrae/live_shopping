@@ -30,7 +30,6 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
 
     useEffect(() => {
         let onMessageReceived = async function (event: any) {
-            console.log(event, 'event');
             const isSDKReady = event.name === TIM.EVENT.SDK_READY ? true : false;
             const { messageMapping } = await getAllMessage();
             setMessageFunc([...messageMapping]);

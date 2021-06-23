@@ -6,6 +6,7 @@ import { Constants } from '../../constants/common_constants';
 import { tim } from '../../index';
 import { getAllMessage } from '../../hooks/useTim';
 import { useGetGoods } from '../../hooks/useGoods';
+import { useEffect } from 'react';
 
 interface ICommentWrite {
     setMessageFunc: Function;
@@ -44,11 +45,10 @@ export const CommentWrite: React.FC<ICommentWrite> = ({ setMessageFunc, userID }
             }
         },
     });
-
+    const [chatOrQna, setChatOrQna] = useState(true);
     const onKeyPress = useCallback(
         async (e: any) => {
             setComment(e.target.value);
-            console.log('key press');
             if (e.keyCode === 13) {
                 e.preventDefault();
                 if (e.target.value === '') {
@@ -80,7 +80,6 @@ export const CommentWrite: React.FC<ICommentWrite> = ({ setMessageFunc, userID }
                     const textarea: any = document.querySelector('#write_textarea');
                     textarea.value = '';
                 } else {
-                    console.log(userID);
                     const askQna = (qna: string) => {
                         createLiveChatQna({
                             variables: {
@@ -98,16 +97,14 @@ export const CommentWrite: React.FC<ICommentWrite> = ({ setMessageFunc, userID }
                 }
             }
         },
-        [comment]
+        [comment, chatOrQna]
     );
 
-    const [chatOrQna, setChatOrQna] = useState(true);
     const changeChatOrQna = useCallback(
         (e: any) => {
             const {
                 target: { id },
             } = e;
-            console.log(id, chatOrQna);
             if (id === 'chat' && !chatOrQna) {
                 setChatOrQna(true);
             }
@@ -123,6 +120,7 @@ export const CommentWrite: React.FC<ICommentWrite> = ({ setMessageFunc, userID }
         },
         [chatOrQna]
     );
+
     const style = useCallback(
         (goodsList: any[]) => {
             if (goodsList?.length < 1) {
