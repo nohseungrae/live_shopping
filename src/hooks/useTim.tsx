@@ -133,7 +133,7 @@ export const getAllMessage = async () => {
             case TIM.TYPES.JOIN_STATUS_WAIT_APPROVAL: // 等待管理员同意
                 break;
             case TIM.TYPES.JOIN_STATUS_SUCCESS: // 加群成功
-                console.log(joinGroup.data.status); // 加入的群组资料
+                console.log(joinGroup.data.status, '성공'); // 加入的群组资料
                 break;
             case TIM.TYPES.JOIN_STATUS_ALREADY_IN_GROUP: // 已经在群中
                 console.log('이미 초대받은 멤버입니다.');
@@ -158,19 +158,21 @@ export const getAllMessage = async () => {
             let isCompleted = false;
             let messageListMapping: any[] = [];
             let nextReqMessageID = '';
-            for (let index = 0; index < 3; index++) {
-                if (!isCompleted) {
-                    const messageList = await tim.getMessageList({
-                        conversationID,
-                        nextReqMessageID,
-                        count: 15,
-                    });
-                    nextReqMessageID = messageList.data.nextReqMessageID;
-                    isCompleted = messageList.data.isCompleted;
-                    messageListMapping = [...messageList.data.messageList, ...messageListMapping];
+            do {
+                const messageList = await tim.getMessageList({
+                    conversationID,
+                    nextReqMessageID,
+                    count: 15,
+                });
+                console.log(messageList.data);
+                nextReqMessageID = messageList.data.nextReqMessageID;
+                isCompleted = messageList.data.isCompleted;
+                messageListMapping = [...messageList.data.messageList, ...messageListMapping];
+                if (messageListMapping.length === 30) {
+                    break;
                 }
-            }
-            // console.log(messageListMapping, 'messageListMapping');
+            } while (!isCompleted);
+            console.log(messageListMapping);
             const messageMapping = messageListMapping
                 .map((message: any, index: number) => {
                     return {

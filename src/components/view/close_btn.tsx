@@ -12,6 +12,7 @@ import {
 import { logout, quitGroup } from '../../hooks/useTim';
 import CloseIcon from '@material-ui/icons/Close';
 import { flvDestroy } from '../../hooks/usePlayer';
+import { player2 } from './player/video';
 
 interface IClose {
     qnaModal?: boolean;
@@ -44,9 +45,6 @@ export const CloseBtn: React.FC<IClose> = ({ qnaModal, goodsModal, basketModal, 
             const wheel = window.localStorage.getItem('wheel');
             if (wheel === 'false') {
                 window.localStorage.setItem('wheel', 'true');
-            }
-            if (playState) {
-                flvDestroy(playState);
             }
             await logout();
             // console.log(logoutResult, "나가요");

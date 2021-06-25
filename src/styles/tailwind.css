@@ -22,7 +22,6 @@ img {
 }
 #saralive_root i {
     font-style: inherit;
-    color: #000000;
 }
 #saralive_root *,
 ::before,
@@ -406,6 +405,8 @@ img {
 #saralive_root .chat_text {
     display: inline;
     margin-left: 5px;
+    color: #ffffff;
+    line-height: inherit;
 }
 #saralive_root .qna_new_btn {
     position: absolute;

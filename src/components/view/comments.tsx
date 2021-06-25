@@ -6,6 +6,8 @@ import { Constants } from '../../constants/common_constants';
 import { isAtLeastInVar, isFullOnInVar, isFullSizeWriteInVar, isOpenedInVar } from '../../apollo';
 import { useReactiveVar } from '@apollo/client';
 import { tim } from '../../index';
+import { useMemo } from 'react';
+import { useCallback } from 'react';
 
 interface IProps {
     setMessageFunc: Function;
@@ -30,7 +32,7 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
 
     useEffect(() => {
         let onMessageReceived = async function (event: any) {
-            const isSDKReady = event.name === TIM.EVENT.SDK_READY ? true : false;
+            // const isSDKReady = event.name === TIM.EVENT.SDK_READY ? true : false;
             const { messageMapping } = await getAllMessage();
             setMessageFunc([...messageMapping]);
         };
@@ -56,7 +58,7 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
                 if (e.target.offsetHeight !== 160 && e.target.offsetHeight !== 380) {
                     return;
                 }
-                if (e.target.scrollHeight - e.target.scrollTop === e.target.offsetHeight) {
+                if (e.target.scrollHeight - Math.floor(e.target.scrollTop) === e.target.offsetHeight) {
                     return isAtLeastInVar(false);
                 } else {
                     return isAtLeastInVar(true);
@@ -79,6 +81,30 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
         };
     }, [isFullSizeWriteOn, message]);
 
+    const textRef = useRef<any>(null);
+    const [height, setHeight] = useState(0);
+    const heightCal = useCallback(
+        (clientHeight: number) => {
+            setHeight((prev) => prev + clientHeight);
+        },
+        [height]
+    );
+    useEffect(() => {
+        if (textRef.current) {
+            textRef.current.childNodes.forEach((el: any, currentIndex: number) => {
+                if (message.length >= 20) {
+                    if (currentIndex < 20) {
+                        heightCal(el.clientHeight);
+                    }
+                }
+                if (message.length < 20) {
+                    if (currentIndex < message.length) {
+                        heightCal(el.clientHeight);
+                    }
+                }
+            });
+        }
+    }, [message]);
     return (
         <div
             onClick={(e: any) => {
@@ -92,8 +118,8 @@ export const Comments: React.FC<IProps> = ({ message, setMessageFunc, userInfo }
             ref={commentsEndRef}
             className={`comments ${isFullOn ? 'invisible' : 'visible'}`}
         >
-            <div className={'comments_inner'} style={{ height: `400px` }}>
-                <div className={'comments_ani_area'}>
+            <div className={'comments_inner'} style={{ height: `${height}px` }}>
+                <div ref={textRef} className={'comments_ani_area'}>
                     {message.map((m, i) => {
                         return (
                             <div className={'chat_box'} key={i}>

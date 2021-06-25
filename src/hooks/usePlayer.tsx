@@ -51,33 +51,35 @@ export const createPlayer = (mediaDataSource: { type: string; url: string }) => 
     });
 };
 export const flvLoadMds = (mediaDataSource: { type: string; url: string }, player: any, ref: any) => {
-    // console.log(typeof player, player);
     if (typeof player !== 'undefined') {
+        console.log('1. load시 플레이어가 초기화 되어 있지 않고 무언가 존재하면 null로 초기화');
         if (player != null) {
-            console.log(player, '-------------------------------------');
-            player.unload();
-            player?.detachMediaElement();
-            player.destroy();
+            player?.unload();
+            if (player._mediaDataSource) {
+                player?.detachMediaElement();
+                player?.destroy();
+            }
             player = null;
         }
     }
+    console.log('2. 초기화되어 있는 플레이어를 새로 생성');
     player = createPlayer(mediaDataSource);
     player?.attachMediaElement(ref?.current);
     player?.load();
-
+    player.muted = true;
+    const parsingUrl = player._mediaElement.src;
+    console.log(`3. ${parsingUrl} 플레이어의 src`);
     player?.on(flvjs.Events.SCRIPTDATA_ARRIVED, async (e: any) => {
         const dim: HTMLDivElement | null = document.querySelector('.dimmed');
         const playerImg: HTMLDivElement | null = document.querySelector('.player');
+
+        console.log(`4. SCRIPTDATA_ARRIVED - 플레이 시작 가능`);
+        console.log(player, dim, playerImg);
         if (dim && playerImg) {
             playerImg.style.zIndex = '0';
             dim.style.display = 'none';
-        } else {
-            await player.play();
         }
     });
-    // player?.on(flvjs.Events.MEDIA_INFO, (e: any) => {
-    //     console.log('MEDIA_INFO!!!!!!!!!!!!!!!!!!!!!!!!', e);
-    // });
     player?.on(flvjs.Events.LOADING_COMPLETE, (e: any) => {
         console.log('LOADING_COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!', e);
         const dim: HTMLDivElement | null = document.querySelector('.dimmed');
@@ -91,81 +93,75 @@ export const flvLoadMds = (mediaDataSource: { type: string; url: string }, playe
             ref.current.style.display = 'none';
         }
     });
-    // player?.on(flvjs.Events.METADATA_ARRIVED, (e: any) => {
-    //     console.log('METADATA_ARRIVED!!!!!!!!!!!!!!!!!!!!!!!!', e);
-    // });
-    // player?.on(flvjs.Events.RECOVERED_EARLY_EOF, (e: any) => {
-    //     console.log('RECOVERED_EARLY_EOF!!!!!!!!!!!!!!!!!!!!!!!!', e);
-    // });
     let decodedFrames = 0;
     player?.on(flvjs.Events.STATISTICS_INFO, async (e: any) => {
-        // console.log('STATISTICS_INFO!!!!!!!!!!!!!!!!!!!!!!!!', e);
-        // console.log(decodedFrames, e.decodedFrames);
-        if (decodedFrames === e.decodedFrames) {
-            await flvDestroy(player);
+        // console.log('STATISTICS_INFO!!!!!!!!!!!!!!!!!!!!!!!!', e, player);
+        if (decodedFrames === e.decodedFrames && !player._mediaDataSource) {
+            console.log('상태체크 중 decodedFrames === e.decodedFrames', player);
+            await player.unload();
+            await player.detachMediaElement();
+            await player.destroy();
+            player = null;
             player = await createPlayer(mediaDataSource);
             await player?.attachMediaElement(ref?.current);
             await player?.load();
-            return;
+            return player;
         }
         decodedFrames = e.decodedFrames;
-        if (decodedFrames === 0) {
-            await flvDestroy(player);
-            player = await createPlayer(mediaDataSource);
-            await player?.attachMediaElement(ref?.current);
-            await player?.load();
+
+        // console.log(e.decodedFrames, player, parsingUrl, ref.current.src);
+        if (parsingUrl !== ref.current.src) {
+            console.log('여기 에러있어요!!!!!!!!!!!!!!!!!!');
+            // await player?.unload();
+            // await player?.detachMediaElement();
+            // await player?.destroy();
+            // player = null;
+            // player = await createPlayer(mediaDataSource);
+            // await player?.attachMediaElement(ref?.current);
+            // await player?.load();
+            // return player;
         }
+        // if (e.decodedFrames === 0) {
+        //     console.log('e.decodedFrames === 0', player);
+        //     await player.unload();
+        //     await player.detachMediaElement();
+        //     await player.destroy();
+        //     player = null;
+        //     player = await createPlayer(mediaDataSource);
+        //     await player?.attachMediaElement(ref?.current);
+        //     await player?.load();
+        //     return player;
+        // }
     });
     flvjs?.LoggingControl.addLogListener(async function (log) {
-        // console.log(log, ' ----------- 로그');
-        if (log === 'warn') {
-            await player?.pause();
-            await player?.unload();
-            await player?.attachMediaElement(ref.current);
-            await player?.load();
-            await player?.play();
-        }
+        // if (log === 'warn') {
+        //     console.log(log, ' ----------- 로그warn', player._mediaDataSource);
+        //     if (player._mediaDataSource) {
+        //         await player?.unload();
+        //         await player?.attachMediaElement(ref.current);
+        //         await player?.load();
+        //         await player?.play();
+        //         return;
+        //     }
+        //     await player?.unload();
+        //     await player?.attachMediaElement(ref.current);
+        //     await player?.load();
+        //     await player?.play();
+        // }
         if (log === 'error') {
-            await player.detachMediaElement();
+            console.log(log, ' ----------- 로그error', player);
+            await player?.unload();
+            await player?.detachMediaElement();
+            await player?.destroy();
+            player = null;
         }
     });
-    // console.log(player.buffered, player.currentTime);
-    // player?.on('error', (err: any) => console.log('err', err));
     player?.on(flvjs.Events.ERROR, async (err: any) => {
         console.log(`네트워크 에러가 감지되어 재시작을 합니다.`);
+        player = await createPlayer(mediaDataSource);
+        await player?.attachMediaElement(ref?.current);
+        await player?.load();
     });
-    player.muted = true;
-    // const mediaSource = new MediaSource();
-    // const mimeCodec = 'video/mp4;codecs=avc1.4d401e';
-    // const fetchAB = (url: string, cb: any) => {
-    //     console.log(url);
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.open('get', url);
-    //     xhr.responseType = 'arraybuffer';
-    //     xhr.onload = function () {
-    //         cb(xhr.response);
-    //     };
-    //     xhr.send();
-    // };
-    // const sourceOpen = (_: any) => {
-    //     console.log(mediaSource.readyState); // open
-    //     var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
-    //     fetchAB(mediaDataSource.url, function (buf: any) {
-    //         sourceBuffer.addEventListener('updateend', function (_) {
-    //             mediaSource.endOfStream();
-    //             ref.current.play();
-    //             console.log(mediaSource.readyState); // ended
-    //         });
-    //         sourceBuffer.appendBuffer(buf);
-    //     });
-    // };
-    // if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-    //     console.log(mediaSource.readyState); // closed
-    //     ref.current.src = URL.createObjectURL(mediaSource);
-    //     mediaSource.addEventListener('sourceopen', sourceOpen);
-    // } else {
-    //     console.error('Unsupported MIME type or codec: ', mimeCodec);
-    // }
     return player;
 };
 export const flvLoad = (streamKey: string, player: any, ref: any) => {
@@ -181,8 +177,6 @@ export const flvLoad = (streamKey: string, player: any, ref: any) => {
 export const flvDestroy = (player: any) => {
     if (player) {
         console.log(player);
-        if (player._mediaInfo) {
-        }
         player.unload();
         player.detachMediaElement();
         player.destroy();

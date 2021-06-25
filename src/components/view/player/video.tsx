@@ -1,10 +1,10 @@
 import { useReactiveVar } from '@apollo/client';
 import FlvJs from 'flv.js';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ReactPlayer from 'react-player';
 import { isLiveInVar, isOpenedInVar } from '../../../apollo';
 import { useGetStreamKey } from '../../../hooks/useKey';
-import { flvLoad } from '../../../hooks/usePlayer';
+import { flvDestroy, flvLoad } from '../../../hooks/usePlayer';
 export let player2: any;
 interface IVideoProps {
     playStateSetting?: any;
@@ -17,14 +17,41 @@ export const Video: React.FC<IVideoProps> = ({ playState, playStateSetting }) =>
 
     const isOpened = useReactiveVar(isOpenedInVar);
 
-    useEffect(() => {
-        if (ref.current && isOpened) {
-            ref.current.poster = 'static/pc/images/live_thumbnail.jpg';
-            if (!playState) {
-                playStateSetting(flvLoad(data?.getStreamKey?.streamKey, player2, ref));
+    const replay = useCallback(async (player: any) => {
+        try {
+            if (!player) {
+                console.log('큰화면 - 1. player가 null 일 경우 ', player);
+                return flvLoad(data?.getStreamKey?.streamKey, player, ref);
             }
+            console.log('큰화면 - 2. player가 존재할 경우 ', player);
+            await player.attachMediaElement(ref.current);
+            await player.load();
+            return player;
+        } catch (error) {
+            console.log('큰화면 - 3. 에러 터진 경우 ', player);
+            await player?.unload();
+            await player?.detachMediaElement();
+            player = null;
+            return player;
         }
-    });
+    }, []);
+
+    useEffect(() => {
+        if (ref.current && isOpened && !player2) {
+            console.log('video 실행', player2);
+            const replayFunc = (async () => {
+                ref.current.poster = 'static/pc/images/live_thumbnail.jpg';
+                player2 = await replay(player2);
+            })();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isOpened && player2) {
+            player2 = flvDestroy(player2);
+            console.log(player2, 'close');
+        }
+    }, [isOpened]);
 
     // const reactPlayerConfig = {
     //     url: isOpened ? `https://live.thesaracen.com/${data?.getStreamKey?.streamKey.split('?').join('.flv?')}` : '',
@@ -42,7 +69,25 @@ export const Video: React.FC<IVideoProps> = ({ playState, playStateSetting }) =>
                 <div className={'video_source_container w-full h-full'}>
                     <div className={'video_source_shadow absolute w-full h-full'}>
                         <div className={'video_source_wrapper relative w-full h-full'}>
-                            <video ref={ref} className="flv_player main_player" autoPlay>
+                            <video
+                                ref={ref}
+                                className="flv_player main_player"
+                                autoPlay
+                                onError={async (e: any) => {
+                                    try {
+                                        console.log(e, 'error', player2);
+                                        if (!player2) {
+                                            return;
+                                        } else {
+                                            player2 = flvDestroy(player2);
+                                            player2 = await replay(player2);
+                                        }
+                                    } catch (error) {
+                                        console.log(error);
+                                        flvDestroy(player2);
+                                    }
+                                }}
+                            >
                                 메인 사라 라이브
                             </video>
                             {/* <div ref={ref} id="playerView"></div> */}

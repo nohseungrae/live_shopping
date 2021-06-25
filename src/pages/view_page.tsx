@@ -1,52 +1,58 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { isLiveInVar, isOpenedInVar } from '../apollo';
 import { ViewLayout } from '../components/view/view_layout';
 import { useGetStreamKey } from '../hooks/useKey';
-import { useCallback } from 'react';
 import { isIE } from 'react-device-detect';
-import { flvLoad } from '../hooks/usePlayer';
-import { clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+import { flvLoad, flvDestroy } from '../hooks/usePlayer';
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 
 export let player1: any;
 export const ViewPage = () => {
-    const ref = useRef<any>(null);
-
-    const openView = useCallback(() => {
-        if (isIE) {
-            return alert('라이브 쇼는 IE에서 지원하지 않습니다.\n다른 브라우저를 이용해 주세요.(크롬, 사파리, 엣지 등...)');
-        }
-        if (player1 && player1._mediaInfo) {
-            console.log(player1);
-
-            // flvDestroy(player1);
-            player1.unload();
-        }
-        isOpenedInVar(true);
-    }, []);
+    const ref = useRef<any>();
     const isOpened = useReactiveVar(isOpenedInVar);
     const isLive = useReactiveVar(isLiveInVar);
     const { data } = useGetStreamKey();
 
-    useEffect(() => {
-        const replay = async (player: any) => {
+    const replay = useCallback(
+        async (player: any) => {
             try {
-                await player?.unload();
-                await player?.attachMediaElement(ref.current);
-                await player?.load();
-                await player?.play();
+                if (!player) {
+                    console.log('load - 1. player가 null 일 경우 ', player);
+                    return flvLoad(data?.getStreamKey?.streamKey, player, ref);
+                }
+                console.log('load - 2. player가 존재할 경우 ', player);
+                await player.attachMediaElement(ref.current);
+                await player.load();
+                return player;
             } catch (error) {
-                player = flvLoad(data?.getStreamKey?.streamKey, player1, ref);
-                console.log(error);
+                console.log('load - 3. 에러 터진 경우 ', player);
+                await player?.unload();
+                await player?.detachMediaElement();
+                player = null;
+                return player;
             }
-        };
+        },
+        [ref.current, data?.getStreamKey?.isShow, isOpened]
+    );
 
-        if (ref.current && !isOpened) {
-            if (!player1) {
-                player1 = flvLoad(data?.getStreamKey?.streamKey, player1, ref);
-            } else {
-                replay(player1);
-            }
+    const openView = useCallback(async () => {
+        if (isIE) {
+            return alert('라이브 쇼는 IE에서 지원하지 않습니다.\n다른 브라우저를 이용해 주세요.(크롬, 사파리, 엣지 등...)');
+        }
+        console.log(player1);
+        await player1?.unload();
+        await player1?.detachMediaElement();
+        player1 = null;
+        isOpenedInVar(true);
+    }, [isOpened]);
+
+    useEffect(() => {
+        if (ref.current && !isOpened && data?.getStreamKey?.isShow === 1) {
+            const replayFunc = (async () => {
+                player1 = await replay(player1);
+            })();
+
             // console.log(player1._msectl);
             // player1._msectl.onsourceclose = (err: any) => {
             //     console.log('source error', err);
@@ -63,12 +69,12 @@ export const ViewPage = () => {
     //     console.log(`error off ==================================================`);
     // });
     useEffect(() => {
-        if (data?.getStreamKey?.isLive === 1 && data?.getStreamKey?.isOnline === 1) {
+        if (data?.getStreamKey?.isShow === 1) {
             isLiveInVar(true);
         } else {
             isLiveInVar(false);
         }
-    }, [data]);
+    }, [data?.getStreamKey?.isShow]);
 
     const body = document.querySelector('body') as HTMLBodyElement;
 
@@ -107,9 +113,22 @@ export const ViewPage = () => {
                                     ref={ref}
                                     className="flv_player sub_player"
                                     autoPlay
-                                    onError={(e: any) => console.log(e, 'eheheheheheheheheh------------------')}
+                                    onError={async (e: any) => {
+                                        try {
+                                            console.log(e, 'error', player1);
+                                            if (!player1) {
+                                                return;
+                                            } else {
+                                                player1 = flvDestroy(player1);
+                                                player1 = await replay(player1);
+                                            }
+                                        } catch (error) {
+                                            console.log(error);
+                                            flvDestroy(player1);
+                                        }
+                                    }}
                                 >
-                                    <source src={ref?.current?.src} />
+                                    <source />
                                 </video>
 
                                 {/* <ReactPlayer
